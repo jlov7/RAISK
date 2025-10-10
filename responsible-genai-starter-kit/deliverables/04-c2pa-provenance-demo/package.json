@@ -1,0 +1,39 @@
+{
+  "name": "c2pa-provenance-demo",
+  "version": "0.1.0",
+  "description": "C2PA Content Provenance Demo - Sign and verify AI-generated content",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "sign": "node dist/cli-sign.js",
+    "verify": "node dist/cli-verify.js",
+    "test": "node test/test.js",
+    "viewer": "npx serve viewer -p 8080",
+    "postinstall": "node scripts/setup-viewer-assets.cjs"
+  },
+  "keywords": [
+    "c2pa",
+    "content-provenance",
+    "content-authenticity",
+    "ai-content",
+    "digital-signatures"
+  ],
+  "author": "Responsible GenAI Starter Kit",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "c2pa": "^0.30.15",
+    "c2pa-node": "^0.5.26",
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "serve": "^14.2.1"
+  }
+}

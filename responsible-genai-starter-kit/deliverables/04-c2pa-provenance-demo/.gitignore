@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Development certificates and keys
+# WARNING: Never commit private keys!
+examples/certs/*.pem
+examples/certs/*.key
+examples/certs/*.crt
+examples/certs/*.p12
+
+# Test fixtures
+test/fixtures/
+test/output/
+
+# Example signed images
+examples/images/*-signed.*
+examples/images/*.jpg
+examples/images/*.png
+examples/images/*.webp
+!examples/images/README.txt
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Output from verification
+*-manifest.json
+verification-*.json

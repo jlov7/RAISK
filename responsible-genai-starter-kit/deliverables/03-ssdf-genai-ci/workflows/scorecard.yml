@@ -1,0 +1,259 @@
+name: OpenSSF Scorecard
+
+# SSDF Practice Mapping:
+# - PO.3.1: Establish and maintain security practices
+# - PO.3.2: Provide role-based training for secure development
+# - PS.1.1: Store and secure software components
+# - PW.1.1: Define and maintain secure build practices
+
+on:
+  # Weekly assessment of security posture
+  schedule:
+    # Run every Monday at 10:00 AM UTC
+    - cron: '0 10 * * 1'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+  # Run on branch protection changes
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+
+# Least privilege permissions
+permissions: read-all
+
+jobs:
+  analysis:
+    name: OpenSSF Scorecard Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # SSDF PO.3.1: Continuous assessment of secure development practices
+    # OpenSSF Scorecard evaluates 18+ security checks across the repository
+
+    permissions:
+      security-events: write  # For uploading results to Security tab
+      id-token: write         # For signing results with OIDC
+      contents: read
+      actions: read           # For analyzing GitHub Actions usage
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+        with:
+          persist-credentials: false
+
+      # SSDF PO.3.1: Run OpenSSF Scorecard security checks
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46  # v2.4.0
+        with:
+          results_file: scorecard-results.sarif
+          results_format: sarif
+
+          # Publish results to OpenSSF REST API for transparency
+          # Set to true for public repositories
+          publish_results: false
+
+      # SSDF PW.7.1: Upload security results for review
+      - name: Upload Scorecard results to GitHub Security
+        uses: github/codeql-action/upload-sarif@f09c1c0a94de965c15400f5634aa42fac8fb8f88  # v3.27.5
+        with:
+          sarif_file: scorecard-results.sarif
+          category: 'openssf-scorecard'
+
+      # Archive results for historical tracking
+      - name: Upload Scorecard artifacts
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: scorecard-results
+          path: scorecard-results.sarif
+          retention-days: 90
+
+      # Generate human-readable summary
+      - name: Generate Scorecard summary
+        run: |
+          echo "## OpenSSF Scorecard Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "OpenSSF Scorecard evaluates repository security practices." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Checks Performed:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch-Protection: Protection rules on default/release branches" >> $GITHUB_STEP_SUMMARY
+          echo "- CI-Tests: Continuous integration testing" >> $GITHUB_STEP_SUMMARY
+          echo "- Code-Review: Code review before merging" >> $GITHUB_STEP_SUMMARY
+          echo "- Contributors: Active maintainers and diverse contributions" >> $GITHUB_STEP_SUMMARY
+          echo "- Dangerous-Workflow: Risky GitHub Actions patterns" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependency-Update-Tool: Automated dependency updates (Dependabot/Renovate)" >> $GITHUB_STEP_SUMMARY
+          echo "- Fuzzing: Fuzz testing for input validation" >> $GITHUB_STEP_SUMMARY
+          echo "- License: Valid open-source license" >> $GITHUB_STEP_SUMMARY
+          echo "- Maintained: Recent commit activity" >> $GITHUB_STEP_SUMMARY
+          echo "- Pinned-Dependencies: Pinned action/dependency versions" >> $GITHUB_STEP_SUMMARY
+          echo "- SAST: Static analysis tools enabled" >> $GITHUB_STEP_SUMMARY
+          echo "- Security-Policy: SECURITY.md file present" >> $GITHUB_STEP_SUMMARY
+          echo "- Signed-Releases: Cryptographically signed releases" >> $GITHUB_STEP_SUMMARY
+          echo "- Token-Permissions: Least-privilege workflow permissions" >> $GITHUB_STEP_SUMMARY
+          echo "- Vulnerabilities: Known security vulnerabilities in dependencies" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SSDF Practices:**" >> $GITHUB_STEP_SUMMARY
+          echo "- PO.3.1: Continuous security practice assessment" >> $GITHUB_STEP_SUMMARY
+          echo "- PS.1.1: Repository security posture monitoring" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.1.1: Secure development baseline verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View detailed results in the [Security tab](https://github.com/${{ github.repository }}/security/code-scanning)." >> $GITHUB_STEP_SUMMARY
+
+  badge-generation:
+    name: Generate Scorecard Badge
+    runs-on: ubuntu-latest
+    needs: analysis
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 5
+
+    # Optional: Generate badge for README display
+    # SSDF PO.3.2: Make security posture visible to stakeholders
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+
+      - name: Download Scorecard results
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.8
+        with:
+          name: scorecard-results
+
+      # Parse SARIF and generate badge
+      - name: Generate badge JSON
+        run: |
+          # Extract overall score (if available in future Scorecard versions)
+          # For now, count passing checks as proxy metric
+
+          mkdir -p .github/badges
+
+          # Placeholder badge generation
+          # Real implementation would parse scorecard-results.sarif
+          cat > .github/badges/scorecard.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "OpenSSF Scorecard",
+            "message": "Monitored",
+            "color": "blue"
+          }
+          EOF
+
+      # Commit badge (optional, for public repos)
+      # - name: Commit badge
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add .github/badges/scorecard.json
+      #     git commit -m "Update OpenSSF Scorecard badge [skip ci]" || exit 0
+      #     git push
+
+  recommendations:
+    name: Generate Security Recommendations
+    runs-on: ubuntu-latest
+    needs: analysis
+    if: github.event_name == 'schedule'
+    timeout-minutes: 10
+
+    # SSDF PO.3.2: Provide actionable security guidance
+    # Creates GitHub Issues for failed Scorecard checks
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Download Scorecard results
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.8
+        with:
+          name: scorecard-results
+
+      - name: Parse results and create recommendations
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Read SARIF results
+            const sarif = JSON.parse(fs.readFileSync('scorecard-results.sarif', 'utf8'));
+
+            // Parse Scorecard checks
+            const runs = sarif.runs || [];
+            const results = runs.flatMap(run => run.results || []);
+
+            // Check for critical failures
+            const criticalChecks = [
+              'Branch-Protection',
+              'Pinned-Dependencies',
+              'Token-Permissions',
+              'SAST',
+              'Vulnerabilities'
+            ];
+
+            const failures = results.filter(result =>
+              result.level === 'error' || result.level === 'warning'
+            );
+
+            if (failures.length === 0) {
+              console.log('No critical security issues found!');
+              return;
+            }
+
+            // Create GitHub Issue for tracking
+            const issueBody = `## OpenSSF Scorecard Security Recommendations
+
+            The weekly OpenSSF Scorecard scan identified areas for improvement:
+
+            ### Failed/Warning Checks
+
+            ${failures.map(f => `- **${f.ruleId}**: ${f.message.text}`).join('\n')}
+
+            ### Recommended Actions
+
+            1. **Review Security Tab**: Check detailed findings in [Code Scanning](https://github.com/${context.repo.owner}/${context.repo.repo}/security/code-scanning)
+            2. **Implement Fixes**: Address each failed check according to OpenSSF best practices
+            3. **Re-run Scorecard**: Trigger workflow manually after fixes
+
+            ### SSDF Alignment
+
+            These recommendations support SSDF practices:
+            - **PO.3.1**: Establish and maintain security practices
+            - **PO.3.2**: Provide role-based security training
+            - **PW.1.1**: Define and maintain secure build practices
+
+            ---
+
+            **Scan Date**: ${new Date().toISOString()}
+            **Workflow Run**: https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+            `;
+
+            // Check if similar issue exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['security', 'openssf-scorecard']
+            });
+
+            if (issues.data.length > 0) {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: issueBody
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '[Security] OpenSSF Scorecard Recommendations',
+                body: issueBody,
+                labels: ['security', 'openssf-scorecard', 'good first issue']
+              });
+            }

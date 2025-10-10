@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Lovell"
+    given-names: "Jason"
+    email: "jason@yourdomain.com"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "Responsible GenAI Starter Kit"
+version: 0.1.0
+doi: 10.5281/zenodo.XXXXXX
+date-released: 2025-01-XX
+url: "https://github.com/yourusername/responsible-genai-starter-kit"
+repository-code: "https://github.com/yourusername/responsible-genai-starter-kit"
+license: Apache-2.0
+keywords:
+  - artificial-intelligence
+  - generative-ai
+  - nist-ai-rmf
+  - responsible-ai
+  - security
+  - provenance
+  - evaluation
+  - c2pa
+type: software
+abstract: "Production-ready toolkit for building responsible generative AI systems aligned to NIST AI 600-1, AI RMF Playbook, and NIST SP 800-218A. Includes risk management checklists, evaluation harnesses, CI/CD workflows, and content provenance tools."

@@ -1,0 +1,29 @@
+# CODEOWNERS - GitHub will request reviews from these owners
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @yourusername
+
+# Deliverables - require review from lead + domain expert
+/deliverables/01-gai-rmf-kit/ @yourusername
+/deliverables/02-eval-harness/ @yourusername
+/deliverables/03-ssdf-genai-ci/ @yourusername
+/deliverables/04-c2pa-provenance-demo/ @yourusername
+/deliverables/05-iso42001-bridge/ @yourusername
+/deliverables/06-education-onepager/ @yourusername
+
+# Documentation - require review from docs team
+/docs/ @yourusername
+*.md @yourusername
+
+# CI/CD workflows - require security review
+/.github/workflows/ @yourusername
+
+# Security-sensitive files
+/SECURITY.md @yourusername
+/scripts/check_thresholds.py @yourusername
+
+# Release artifacts
+/VERSION @yourusername
+/CHANGELOG.md @yourusername
+/RELEASE_NOTES.md @yourusername

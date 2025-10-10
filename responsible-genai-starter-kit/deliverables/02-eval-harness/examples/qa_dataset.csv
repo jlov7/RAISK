@@ -1,0 +1,6 @@
+input,expected_output,actual_output,category,difficulty
+"What is the capital of France?","Paris","Paris",geography,easy
+"Explain photosynthesis in one sentence.","Photosynthesis is the process by which plants convert sunlight into energy.","Photosynthesis is the process by which plants convert sunlight into energy.",science,medium
+"What is 2+2?","4","4",math,easy
+"Who wrote Romeo and Juliet?","William Shakespeare","William Shakespeare",literature,easy
+"What is the speed of light?","299,792,458 meters per second","Approximately 300,000 km/s",physics,medium

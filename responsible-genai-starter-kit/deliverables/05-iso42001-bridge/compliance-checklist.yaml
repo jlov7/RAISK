@@ -1,0 +1,547 @@
+# ISO/IEC 42001:2023 Compliance Checklist
+# Use this checklist to track implementation status and prepare for certification audit
+
+metadata:
+  version: "0.1.0"
+  last_updated: "2025-01-XX"
+  purpose: "Track ISO/IEC 42001:2023 compliance status for internal audits and certification preparation"
+  instructions: |
+    For each control:
+    - status: not_started | in_progress | implemented | verified
+    - evidence: List artifacts/documentation proving compliance
+    - responsible: Role/person responsible (from RACI matrix)
+    - notes: Implementation details, exceptions, or findings
+
+# Clause 4: Context of the Organization
+clause_4:
+  - control_id: "4.1"
+    title: "Understanding the organization and its context"
+    requirement: "Determine external and internal issues relevant to AIMS"
+    status: "not_started"
+    evidence:
+      - "D1 Model Card - Intended Use section"
+      - "D1 Risk Register - External issues documented"
+      - "Context analysis document"
+    responsible: "Product Manager, Compliance Officer"
+    notes: ""
+
+  - control_id: "4.2"
+    title: "Understanding needs and expectations of interested parties"
+    requirement: "Determine interested parties and their requirements"
+    status: "not_started"
+    evidence:
+      - "D1 Model Card - Stakeholder Engagement section"
+      - "D5 RACI Matrix"
+      - "Stakeholder registry"
+    responsible: "Compliance Officer"
+    notes: ""
+
+  - control_id: "4.3"
+    title: "Determining scope of AIMS"
+    requirement: "Define boundaries and applicability of AIMS"
+    status: "not_started"
+    evidence:
+      - "AIMS scope statement"
+      - "D1 Model Card - Out-of-Scope Uses"
+      - "AI system inventory"
+    responsible: "Compliance Officer, CISO"
+    notes: ""
+
+  - control_id: "4.4"
+    title: "AI management system"
+    requirement: "Establish, implement, maintain, and improve AIMS"
+    status: "not_started"
+    evidence:
+      - "AIMS manual/documentation package"
+      - "D1 checklists (completed)"
+      - "D3 CI/CD workflows"
+      - "D5 Implementation Guide"
+    responsible: "Compliance Officer"
+    notes: ""
+
+# Clause 5: Leadership
+clause_5:
+  - control_id: "5.1"
+    title: "Leadership and commitment"
+    requirement: "Top management demonstrates leadership and commitment"
+    status: "not_started"
+    evidence:
+      - "Governance charter (signed by executives)"
+      - "D1 RAG-GOV-01 execution (governance committee established)"
+      - "Meeting minutes showing executive participation"
+    responsible: "CISO"
+    notes: ""
+
+  - control_id: "5.2"
+    title: "AI policy"
+    requirement: "Establish AI policy appropriate to organization"
+    status: "not_started"
+    evidence:
+      - "Published AI policy document"
+      - "D1 RAG-GOV-02 (Acceptable Use Policy)"
+      - "D1 Model Card - Intended Use section"
+      - "User acknowledgment records"
+    responsible: "Compliance Officer, Legal"
+    notes: ""
+
+  - control_id: "5.3"
+    title: "Organizational roles, responsibilities, authorities"
+    requirement: "Assign and communicate AIMS responsibilities"
+    status: "not_started"
+    evidence:
+      - "D5 RACI Matrix (populated with names)"
+      - "Job descriptions with AI responsibilities"
+      - "Organizational chart showing AI governance"
+    responsible: "Compliance Officer, HR"
+    notes: ""
+
+# Clause 6: Planning
+clause_6:
+  - control_id: "6.1"
+    title: "Actions to address risks and opportunities"
+    requirement: "Plan actions to address AIMS risks"
+    status: "not_started"
+    evidence:
+      - "D1 Risk Register"
+      - "D1 MAP controls (all completed)"
+      - "Threat model (D1 RAG-MAP-04)"
+      - "Risk treatment plan"
+    responsible: "Security Team, Compliance Officer"
+    notes: ""
+
+  - control_id: "6.2"
+    title: "AI objectives and planning"
+    requirement: "Establish measurable AI objectives"
+    status: "not_started"
+    evidence:
+      - "D1 Model Card - Evaluation section (objectives/thresholds)"
+      - "D1 MEASURE controls (baseline metrics)"
+      - "D2 eval reports showing objective achievement"
+      - "Monitoring dashboards tracking objectives"
+    responsible: "ML Engineer, Data Scientist"
+    notes: ""
+
+# Clause 7: Support
+clause_7:
+  - control_id: "7.1"
+    title: "Resources"
+    requirement: "Provide resources for AIMS"
+    status: "not_started"
+    evidence:
+      - "D1 Model Card - Compute Infrastructure section"
+      - "D3 CI/CD infrastructure-as-code configs"
+      - "Budget/resource allocation records"
+    responsible: "Platform Engineer, DevOps/SRE"
+    notes: ""
+
+  - control_id: "7.2"
+    title: "Competence"
+    requirement: "Ensure personnel competence"
+    status: "not_started"
+    evidence:
+      - "Training records (D6 one-pager distribution)"
+      - "D1 RAG-GOV-02 (user training completion records)"
+      - "Competency assessments"
+      - "Job descriptions with competency requirements"
+    responsible: "Compliance Officer, HR"
+    notes: ""
+
+  - control_id: "7.3"
+    title: "Awareness"
+    requirement: "Ensure awareness of AI policy and AIMS"
+    status: "not_started"
+    evidence:
+      - "D1 AUP distribution and acknowledgment records"
+      - "D5 RACI Matrix (communicated to org)"
+      - "Awareness training attendance logs"
+    responsible: "Compliance Officer"
+    notes: ""
+
+  - control_id: "7.4"
+    title: "Communication"
+    requirement: "Determine AIMS communications"
+    status: "not_started"
+    evidence:
+      - "Communication plan"
+      - "D1 Model Card - Contact section"
+      - "D1 RAG-MGT-05 (incident escalation paths)"
+      - "D4 C2PA manifests (external communication)"
+    responsible: "Product Manager, Compliance Officer"
+    notes: ""
+
+  - control_id: "7.5"
+    title: "Documented information"
+    requirement: "AIMS includes required documented information"
+    status: "not_started"
+    evidence:
+      - "D1 checklists, Model Cards, Risk Register"
+      - "D3 SBOMs and SLSA attestations"
+      - "D4 C2PA manifests"
+      - "Document repository with version control"
+    responsible: "Compliance Officer"
+    notes: ""
+
+# Clause 8: Operation
+clause_8:
+  - control_id: "8.1"
+    title: "Operational planning and control"
+    requirement: "Plan, implement, control AIMS processes"
+    status: "not_started"
+    evidence:
+      - "D1 checklists with lifecycle_stage mappings"
+      - "D3 CI/CD workflows (operational automation)"
+      - "D1 MANAGE controls (all completed)"
+      - "Operational procedures/runbooks"
+    responsible: "ML Engineer, Platform Engineer"
+    notes: ""
+
+  - control_id: "8.2"
+    title: "AI system impact assessment"
+    requirement: "Conduct impact assessments for AI systems"
+    status: "not_started"
+    evidence:
+      - "D1 MAP controls (all completed - this IS the impact assessment)"
+      - "D1 Risk Register with impact analysis"
+      - "D1 Model Card - Ethical Considerations section"
+      - "Threat model (D1 RAG-MAP-04)"
+    responsible: "Compliance Officer, Privacy Officer"
+    notes: ""
+
+  - control_id: "8.3"
+    title: "Data management for AI systems"
+    requirement: "Manage data throughout AI lifecycle"
+    status: "not_started"
+    evidence:
+      - "D1 RAG-GOV-03 (data steward assignment)"
+      - "D1 RAG-MAP-02 (data inventory/lineage)"
+      - "D1 RAG-MAP-03 (PII classification)"
+      - "D1 Model Card - Training Data section"
+      - "D3 SBOMs (data pipeline dependencies)"
+    responsible: "Data Scientist, Privacy Officer, Platform Engineer"
+    notes: ""
+
+# Clause 9: Performance Evaluation
+clause_9:
+  - control_id: "9.1"
+    title: "Monitoring, measurement, analysis, evaluation"
+    requirement: "Monitor and measure AIMS and AI performance"
+    status: "not_started"
+    evidence:
+      - "D1 MEASURE controls (all completed)"
+      - "D2 evaluation harness (deployed, historical reports)"
+      - "D1 RAG-MGT-06 (monitoring dashboard)"
+      - "D3 OpenSSF Scorecard results"
+    responsible: "ML Engineer, DevOps/SRE"
+    notes: ""
+
+  - control_id: "9.2"
+    title: "Internal audit"
+    requirement: "Conduct internal AIMS audits"
+    status: "not_started"
+    evidence:
+      - "Internal audit schedule"
+      - "D5 Compliance Checklist (this document)"
+      - "Internal audit reports"
+      - "Corrective action register"
+    responsible: "Compliance Officer"
+    notes: ""
+
+  - control_id: "9.3"
+    title: "Management review"
+    requirement: "Top management reviews AIMS"
+    status: "not_started"
+    evidence:
+      - "Management review schedule (quarterly minimum)"
+      - "D1 RAG-GOV-01 (governance committee meetings)"
+      - "Management review meeting minutes"
+      - "Action item register with closures"
+    responsible: "CISO, Compliance Officer"
+    notes: ""
+
+# Clause 10: Improvement
+clause_10:
+  - control_id: "10.1"
+    title: "Nonconformity and corrective action"
+    requirement: "React to nonconformity and take corrective action"
+    status: "not_started"
+    evidence:
+      - "D1 RAG-MGT-05 (incident response runbook)"
+      - "D1 Model Card - Incident Response section"
+      - "D3 CI/CD quality gates (prevent nonconforming releases)"
+      - "Incident logs with root cause analysis"
+      - "Corrective action closure records"
+    responsible: "Security Team, ML Engineer"
+    notes: ""
+
+  - control_id: "10.2"
+    title: "Continual improvement"
+    requirement: "Continually improve AIMS"
+    status: "not_started"
+    evidence:
+      - "D1 RAG-MGT-06 (drift-triggered retraining)"
+      - "D1 Model Card - Update Cadence and Changelog"
+      - "D2 eval reports comparing model versions"
+      - "Improvement metrics (e.g., incident MTTR trend)"
+    responsible: "ML Engineer, Data Scientist"
+    notes: ""
+
+# Annex A: AI System Lifecycle Controls
+annex_a:
+  # A.1: Design and Development
+  a1_design_development:
+    - control_id: "A.1.1"
+      title: "Data management (design phase)"
+      requirement: "Manage data provenance, quality, and licensing"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MAP-02 (data inventory)"
+        - "D1 RAG-GOV-03 (data steward, quality SLA)"
+        - "D1 Model Card - Training Data section"
+      responsible: "Data Scientist, Platform Engineer"
+      notes: ""
+
+    - control_id: "A.1.2"
+      title: "Model development"
+      requirement: "Manage model versioning and training reproducibility"
+      status: "not_started"
+      evidence:
+        - "D1 Model Card - Training Procedure section"
+        - "Model versioning (Git tags, artifact registry)"
+        - "Training logs (experiment tracker IDs)"
+      responsible: "Data Scientist, ML Engineer"
+      notes: ""
+
+    - control_id: "A.1.3"
+      title: "Testing and validation"
+      requirement: "Test AI system against requirements"
+      status: "not_started"
+      evidence:
+        - "D1 MEASURE controls (all completed)"
+        - "D2 evaluation harness"
+        - "D1 Model Card - Evaluation section"
+        - "Test coverage metrics"
+      responsible: "ML Engineer, Data Scientist"
+      notes: ""
+
+  # A.2: Verification and Validation
+  a2_verification:
+    - control_id: "A.2.1"
+      title: "Independent testing"
+      requirement: "Conduct independent evaluation"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MEAS-05 (red team report)"
+        - "D1 FT-MEAS-06 (external audit)"
+        - "D2 automated eval harness (independent from dev)"
+      responsible: "Security Team, ML Engineer"
+      notes: ""
+
+    - control_id: "A.2.2"
+      title: "Validation against requirements"
+      requirement: "Trace requirements to test results"
+      status: "not_started"
+      evidence:
+        - "Traceability matrix (control_id → acceptance_criteria → test)"
+        - "D1 checklist acceptance_criteria fields"
+      responsible: "ML Engineer, Compliance Officer"
+      notes: ""
+
+  # A.3: Deployment
+  a3_deployment:
+    - control_id: "A.3.1"
+      title: "Deployment planning"
+      requirement: "Plan AI system deployment"
+      status: "not_started"
+      evidence:
+        - "D1 lifecycle_stage='deployment' controls"
+        - "D3 CI/CD deployment workflows"
+        - "Deployment runbook"
+      responsible: "Platform Engineer, DevOps/SRE"
+      notes: ""
+
+    - control_id: "A.3.2"
+      title: "Rollback capability"
+      requirement: "Implement rollback procedures"
+      status: "not_started"
+      evidence:
+        - "D1 Model Card - Version control section"
+        - "D3 rollback workflow"
+        - "Rollback test report"
+      responsible: "Platform Engineer, DevOps/SRE"
+      notes: ""
+
+    - control_id: "A.3.3"
+      title: "Access control"
+      requirement: "Implement AI system access controls"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MGT-07 (RBAC implementation)"
+        - "Access control configuration"
+        - "Penetration test report"
+      responsible: "Platform Engineer, Security Team"
+      notes: ""
+
+  # A.4: Operation and Monitoring
+  a4_operation:
+    - control_id: "A.4.1"
+      title: "Performance monitoring"
+      requirement: "Monitor AI system performance in production"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MGT-06 (monitoring dashboard)"
+        - "Alert configurations and test results"
+        - "Monitoring dashboard screenshots/access"
+      responsible: "DevOps/SRE, ML Engineer"
+      notes: ""
+
+    - control_id: "A.4.2"
+      title: "Incident management"
+      requirement: "Manage AI system incidents"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MGT-05 (incident runbook)"
+        - "Tabletop exercise report"
+        - "Incident logs (if any real incidents)"
+      responsible: "Security Team, CISO"
+      notes: ""
+
+    - control_id: "A.4.3"
+      title: "Logging and auditability"
+      requirement: "Implement tamper-evident logging"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MGT-04 (audit logging)"
+        - "Log retention policy (90+ days)"
+        - "Tamper-evident logging configuration (WORM/crypto)"
+      responsible: "DevOps/SRE, Platform Engineer"
+      notes: ""
+
+  # A.5: Transparency and Explainability
+  a5_transparency:
+    - control_id: "A.5.1"
+      title: "Documentation for users"
+      requirement: "Provide user-facing AI documentation"
+      status: "not_started"
+      evidence:
+        - "D1 Model Card (published)"
+        - "D4 C2PA manifests (content metadata)"
+        - "User documentation/help center"
+      responsible: "Product Manager, ML Engineer"
+      notes: ""
+
+    - control_id: "A.5.2"
+      title: "Explainability mechanisms"
+      requirement: "Implement explainability features"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MEAS-04 (citation accuracy - explainability via citations)"
+        - "D4 C2PA 'ai_generative_training' assertion"
+        - "Explainability implementation (citations, feature attribution, etc.)"
+      responsible: "ML Engineer, Data Scientist"
+      notes: ""
+
+  # A.6: Human Oversight
+  a6_human_oversight:
+    - control_id: "A.6.1"
+      title: "Human-in-the-loop"
+      requirement: "Implement human review for high-risk outputs"
+      status: "not_started"
+      evidence:
+        - "D1 Model Card - Ethical Considerations (human oversight requirements)"
+        - "Human review workflow/approval gates"
+        - "Human review logs"
+      responsible: "Product Manager, ML Engineer"
+      notes: ""
+
+    - control_id: "A.6.2"
+      title: "Override mechanisms"
+      requirement: "Enable human override of AI decisions"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MGT-02 (output filtering with override capability)"
+        - "Override logs showing human interventions"
+        - "Escalation records"
+      responsible: "ML Engineer, Platform Engineer"
+      notes: ""
+
+  # A.7: Cybersecurity
+  a7_cybersecurity:
+    - control_id: "A.7.1"
+      title: "Threat modeling"
+      requirement: "Conduct AI-specific threat modeling"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MAP-04 (threat model)"
+        - "Attack tree diagrams"
+        - "Threat model review records"
+      responsible: "Security Team"
+      notes: ""
+
+    - control_id: "A.7.2"
+      title: "Security testing"
+      requirement: "Test AI system security"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MEAS-05 (red team report)"
+        - "D1 RAG-MGT-01 (input validation testing)"
+        - "Penetration test results"
+      responsible: "Security Team"
+      notes: ""
+
+    - control_id: "A.7.3"
+      title: "Supply chain security"
+      requirement: "Secure AI supply chain (SBOM, provenance, vendor vetting)"
+      status: "not_started"
+      evidence:
+        - "D3 SBOM files (SPDX/CycloneDX)"
+        - "D3 SLSA provenance attestations"
+        - "D3 OpenSSF Scorecard reports"
+        - "D1 RAG-MGT-08 (vendor risk assessments)"
+      responsible: "Platform Engineer, Security Team, Compliance Officer"
+      notes: ""
+
+  # A.8: Data Privacy
+  a8_data_privacy:
+    - control_id: "A.8.1"
+      title: "PII minimization and protection"
+      requirement: "Minimize and protect PII in AI systems"
+      status: "not_started"
+      evidence:
+        - "D1 RAG-MAP-03 (PII inventory/scan)"
+        - "D1 RAG-MEAS-03 (PII detection - 0% leakage target)"
+        - "D1 RAG-MGT-02 (PII redaction)"
+        - "Data minimization plan"
+      responsible: "Privacy Officer, ML Engineer"
+      notes: ""
+
+    - control_id: "A.8.2"
+      title: "Data subject rights"
+      requirement: "Enable data subject rights (access, deletion, etc.)"
+      status: "not_started"
+      evidence:
+        - "D1 Model Card - Retirement Plan (data deletion)"
+        - "Data retention policy"
+        - "Data subject request logs"
+      responsible: "Privacy Officer, Compliance Officer"
+      notes: ""
+
+# Summary Metrics (auto-calculated during audit)
+summary:
+  total_controls: 40
+  not_started: 0
+  in_progress: 0
+  implemented: 0
+  verified: 0
+  completion_percentage: 0%
+
+# Audit History
+audit_history:
+  - audit_date: "YYYY-MM-DD"
+    auditor: "Name"
+    audit_type: "internal | external | surveillance"
+    findings:
+      major_nonconformities: 0
+      minor_nonconformities: 0
+      observations: 0
+    status: "passed | failed | conditional"
+    notes: ""

@@ -1,0 +1,29 @@
+{
+  "title": "Simple Signed Document",
+  "claim_generator": "C2PA Provenance Demo v0.1.0",
+  "format": "image/png",
+  "assertions": [
+    {
+      "label": "stds.schema-org.CreativeWork",
+      "data": {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": "Basic Example",
+        "description": "A simple example demonstrating basic C2PA signing",
+        "author": "Demo User",
+        "dateCreated": "2025-01-15T12:00:00Z"
+      }
+    },
+    {
+      "label": "c2pa.actions",
+      "data": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "when": "2025-01-15T12:00:00Z"
+          }
+        ]
+      }
+    }
+  ]
+}

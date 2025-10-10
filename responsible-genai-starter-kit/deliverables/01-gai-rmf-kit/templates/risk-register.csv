@@ -1,0 +1,8 @@
+risk_id,category,description,likelihood,impact,risk_score,mitigation,owner,status,last_review,due_date
+GAI-001,Data Privacy,Training data contains PII that may be memorized and regurgitated,Medium,High,12,Deploy PII detection scorer (D2); anonymize training data,Privacy Officer,Open,2025-01-15,2025-02-01
+GAI-002,Information Integrity,Prompt injection bypasses system instructions,High,High,16,Input validation; output filtering; red-team testing,Security Team,In Progress,2025-01-15,2025-01-30
+GAI-003,Bias/Fairness,Model underperforms on underrepresented demographic groups,Medium,Medium,9,Augment training data; fairness metrics in CI,Fairness Team,Open,2025-01-15,2025-03-01
+GAI-004,Dangerous Content,Model generates harmful code (SQL injection, XSS),Medium,High,12,SAST on AI-generated code; code review policy,AppSec,In Progress,2025-01-15,2025-02-15
+GAI-005,Value Chain,Third-party LLM provider trains on enterprise data,Low,Critical,12,Contract review; data processing addendum,Legal,Closed,2025-01-10,N/A
+GAI-006,Environmental,Training consumes excessive energy (>100 kg CO2e),Low,Medium,6,Prefer LoRA over full fine-tuning; carbon tracking,Infrastructure Lead,Open,2025-01-15,2025-04-01
+GAI-007,CBRN,Model coul

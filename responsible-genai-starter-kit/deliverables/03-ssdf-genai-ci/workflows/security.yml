@@ -1,0 +1,283 @@
+name: Security Scanning
+
+# SSDF Practice Mapping:
+# - PS.1.1: Store and secure software components
+# - PS.2.1: Protect the integrity of software components
+# - PW.4.1: Identify and document all software components (dependency scanning)
+# - PW.6.1: Perform automated testing (SAST)
+# - PW.7.1: Review and analyze scan results
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run security scans weekly on Monday at 9 AM UTC
+    # SSDF PS.1.1: Regular vulnerability checks
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+# Least privilege permissions per OpenSSF best practices
+permissions:
+  contents: read
+  security-events: write  # For uploading SARIF results to GitHub Security tab
+  pull-requests: write    # For commenting scan results on PRs
+  issues: write           # For creating issues on vulnerabilities
+
+jobs:
+  sast-codeql:
+    name: CodeQL SAST Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # SSDF PW.6.1: Static Application Security Testing
+    # Using GitHub's native CodeQL for source code vulnerability detection
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript]
+        # Add other languages as needed: java, cpp, csharp, go, ruby
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+        with:
+          # Full history for accurate analysis
+          fetch-depth: 0
+
+      # SSDF PW.4.4: Analyze dependencies for known vulnerabilities
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@f09c1c0a94de965c15400f5634aa42fac8fb8f88  # v3.27.5
+        with:
+          languages: ${{ matrix.language }}
+          # Query suite: security-extended includes all security queries
+          # Aligns with SSDF PW.6.1 automated vulnerability detection
+          queries: security-extended
+
+          # Custom queries for GenAI-specific risks (optional)
+          # config-file: ./.github/codeql/codeql-config.yml
+
+      # Autobuild for compiled languages, or manual build steps
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@f09c1c0a94de965c15400f5634aa42fac8fb8f88  # v3.27.5
+
+      # SSDF PW.7.1: Review and analyze scan results
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@f09c1c0a94de965c15400f5634aa42fac8fb8f88  # v3.27.5
+        with:
+          category: "/language:${{ matrix.language }}"
+          # Results automatically uploaded to Security tab (SARIF format)
+          upload: true
+
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # SSDF PW.4.1: Identify all third-party components
+    # SSDF PW.4.4: Analyze dependencies for known vulnerabilities
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+
+      # Python dependency scanning
+      - name: Set up Python
+        if: hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != ''
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        if: hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != ''
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f pyproject.toml ]; then pip install .[dev]; fi
+
+      # SSDF PW.4.4: pip-audit checks PyPI dependencies against OSV database
+      - name: Scan Python dependencies with pip-audit
+        if: hashFiles('requirements.txt', 'pyproject.toml', 'setup.py') != ''
+        run: |
+          pip install pip-audit
+          pip-audit --desc --format json --output pip-audit-report.json || true
+          pip-audit --desc
+        continue-on-error: true
+
+      # JavaScript/Node.js dependency scanning
+      - name: Set up Node.js
+        if: hashFiles('package.json', 'package-lock.json', 'yarn.lock') != ''
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        with:
+          node-version: '20'
+
+      - name: Install Node.js dependencies
+        if: hashFiles('package.json', 'package-lock.json', 'yarn.lock') != ''
+        run: npm ci
+
+      # SSDF PW.4.4: npm audit checks npm registry for known vulnerabilities
+      - name: Scan npm dependencies
+        if: hashFiles('package.json', 'package-lock.json') != ''
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          npm audit
+        continue-on-error: true
+
+      # SSDF PW.4.4: Trivy multi-language vulnerability scanner
+      # Supports Python, Node.js, Go, Rust, Java, .NET, Ruby, etc.
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@5681af892cd0e5103d2a70678d27b314b7cef0c3  # v0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          # GenAI-specific: Include checks for ML framework vulnerabilities
+          scanners: 'vuln,secret,misconfig'
+
+      # SSDF PW.7.1: Upload results for centralized review
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@f09c1c0a94de965c15400f5634aa42fac8fb8f88  # v3.27.5
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'trivy-dependency-scan'
+
+      # Archive scan reports as build artifacts
+      - name: Upload scan reports
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: security-scan-reports
+          path: |
+            pip-audit-report.json
+            npm-audit-report.json
+            trivy-results.sarif
+          retention-days: 90  # SSDF PS.1.1: Retain security records
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # SSDF PS.2.1: Detect accidentally committed secrets
+    # Prevents credential leakage (API keys, tokens, passwords)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+        with:
+          fetch-depth: 0  # Full history to scan all commits
+
+      # Gitleaks: Fast secret detection using regex patterns
+      - name: Run Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@73f4670f5fa06548bae05c5028874bc0fd8e5edb  # v2.3.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: true
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true
+          GITLEAKS_ENABLE_SUMMARY: true
+
+      # SSDF PS.2.1: Also scan for GenAI-specific secrets
+      # Example: OpenAI API keys, Anthropic keys, HuggingFace tokens
+      - name: Scan for GenAI API keys
+        run: |
+          echo "Scanning for GenAI service credentials..."
+
+          # OpenAI keys: sk-[A-Za-z0-9]{48}
+          if grep -r -E "sk-[A-Za-z0-9]{48}" . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo "::warning::Potential OpenAI API key detected"
+          fi
+
+          # Anthropic keys: sk-ant-[A-Za-z0-9-]{95,}
+          if grep -r -E "sk-ant-[A-Za-z0-9-]{95,}" . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo "::warning::Potential Anthropic API key detected"
+          fi
+
+          # HuggingFace tokens: hf_[A-Za-z0-9]{32,}
+          if grep -r -E "hf_[A-Za-z0-9]{32,}" . --exclude-dir=.git --exclude-dir=node_modules; then
+            echo "::warning::Potential HuggingFace token detected"
+          fi
+        continue-on-error: true
+
+  license-compliance:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # SSDF PW.4.1: Document software components and their licenses
+    # SSDF PS.3.1: Ensure compliance with open-source licenses
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+        with:
+          python-version: '3.11'
+
+      # SSDF PW.4.1: Identify licenses of all dependencies
+      - name: Install license checking tools
+        run: |
+          pip install pip-licenses licensecheck
+
+      - name: Generate Python license report
+        if: hashFiles('requirements.txt', 'pyproject.toml') != ''
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+          pip-licenses --format=markdown --output-file=licenses-python.md
+          pip-licenses --format=json --output-file=licenses-python.json
+
+          # Check for problematic licenses (GPL, AGPL in commercial context)
+          # Customize allowed licenses based on your organization's policy
+          pip-licenses --fail-on="GPL;AGPL;SSPL"
+        continue-on-error: true
+
+      - name: Check Node.js licenses
+        if: hashFiles('package.json') != ''
+        run: |
+          npx license-checker --json --out licenses-npm.json
+          npx license-checker --summary
+        continue-on-error: true
+
+      - name: Upload license reports
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: license-reports
+          path: |
+            licenses-*.md
+            licenses-*.json
+          retention-days: 90
+
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [sast-codeql, dependency-scan, secret-scan, license-compliance]
+    if: always()
+
+    # SSDF PW.7.1: Centralize and review all security scan results
+
+    steps:
+      - name: Generate security summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Type | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| CodeQL SAST | ${{ needs.sast-codeql.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Scan | ${{ needs.dependency-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| License Check | ${{ needs.license-compliance.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SSDF Practices Implemented:**" >> $GITHUB_STEP_SUMMARY
+          echo "- PS.1.1: Regular vulnerability scanning" >> $GITHUB_STEP_SUMMARY
+          echo "- PS.2.1: Secret detection and protection" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.4.1: Component and license identification" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.4.4: Dependency vulnerability analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.6.1: Automated SAST testing" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.7.1: Security result review and tracking" >> $GITHUB_STEP_SUMMARY
