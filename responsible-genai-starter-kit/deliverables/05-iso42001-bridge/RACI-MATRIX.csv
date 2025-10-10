@@ -1,0 +1,50 @@
+Activity,Deliverable,ISO 42001 Clause,Data Scientist,ML Engineer,Security Team,Compliance Officer,Platform Engineer,Privacy Officer,CISO,Product Manager,DevOps/SRE
+Establish AI governance committee,D1,5.1,I,I,C,C,I,C,A,C,I
+Define AI policy and AUP,D1,5.2,C,C,C,A,I,C,R,C,I
+Assign RACI roles and responsibilities,D5,5.3,I,I,I,A,I,I,C,I,I
+Complete model card documentation,D1,7.5,R,A,C,C,I,C,I,R,I
+Conduct AI system impact assessment,D1,8.2,C,C,C,A,I,R,C,R,I
+Inventory data sources and lineage,D1,8.3,R,C,I,I,A,C,I,C,I
+Classify PII/PHI in training data,D1,8.3,C,I,C,A,I,R,I,C,I
+Assign data steward for vector DB,D1,8.3,I,I,I,C,A,R,I,C,I
+Conduct threat modeling,D1,A.7.1,I,C,A,C,R,I,C,I,I
+Map prompt injection attack surface,D1,A.7.1,C,C,A,C,I,I,C,I,I
+Establish baseline performance metrics,D1,6.2,R,A,I,I,I,I,I,C,I
+Deploy automated PII detection scorer,D1+D2,A.8.1,C,A,C,I,I,R,I,I,I
+Deploy refusal-rate scoring,D1+D2,6.2,R,A,C,I,I,I,I,C,I
+Measure citation accuracy (RAG),D1+D2,A.5.2,R,A,I,I,I,I,I,C,I
+Red-team for prompt injection,D1,A.7.2,I,C,A,C,I,I,C,I,I
+Implement input validation and sanitization,D1,A.7.2,I,A,C,I,R,I,C,I,I
+Deploy output filtering for PII,D1,A.8.1,C,A,C,I,I,R,I,I,I
+Implement rate limiting and quotas,D1,8.1,I,C,I,I,A,I,I,I,R
+Enable audit logging,D1,A.4.3,I,C,C,I,A,I,C,I,R
+Establish incident response plan,D1,10.1,I,C,A,C,C,I,R,I,C
+Deploy continuous monitoring for drift,D1,A.4.1,C,A,I,I,I,I,I,I,R
+Implement vector DB access controls,D1,A.7.2,I,C,A,I,R,I,C,I,I
+Vet third-party vendors (LLM/DB providers),D1,A.7.3,I,C,C,A,C,I,C,R,I
+Build evaluation harness,D2,A.1.3,R,A,C,I,I,C,I,I,I
+Integrate scorers (PII/refusal/bias),D2,9.1,R,A,C,I,I,C,I,I,I
+Deploy CI/CD workflows,D3,8.1,I,C,C,I,A,I,I,I,R
+Generate SBOMs (SPDX/CycloneDX),D3,A.7.3,I,C,C,C,A,I,I,I,R
+Generate SLSA provenance attestations,D3,A.7.3,I,C,C,C,A,I,I,I,R
+Run OpenSSF Scorecard weekly,D3,9.1,I,I,A,C,C,I,C,I,R
+Implement SSDF-218A controls,D3,A.7.3,I,A,C,C,R,I,C,I,C
+Apply C2PA watermarking to outputs,D4,A.5.1,C,A,I,I,I,I,I,C,I
+Sign content with C2PA manifest,D4,A.5.1,I,A,C,I,R,I,I,I,I
+Verify C2PA provenance,D4,A.5.1,I,A,C,I,R,I,I,I,I
+Document compute infrastructure,D1,7.1,R,A,I,I,C,I,I,I,I
+Track carbon footprint,D1,4.1,R,C,I,C,I,I,I,C,I
+Conduct internal audits,D5,9.2,I,I,C,A,I,C,C,I,I
+Complete compliance checklist,D5,9.2,C,C,C,A,C,C,C,C,C
+Prepare for management review,D5,9.3,C,C,C,A,C,C,R,C,C
+Conduct user training (AUP),D1+D6,7.2,I,I,I,A,I,C,C,R,I
+Distribute education materials,D6,7.3,I,I,I,C,I,I,I,A,I
+Test rollback procedures,D1,A.3.2,I,A,C,I,R,I,I,I,R
+Implement human oversight gates,D1,A.6.1,C,A,I,C,I,I,I,R,I
+Log human overrides,D1,A.6.2,I,A,I,C,I,I,I,C,R
+Define data retention policy,D1,A.8.2,I,C,C,A,I,R,C,I,I
+Execute model retraining triggers,D1,10.2,R,A,I,I,I,I,I,C,C
+Update model card changelog,D1,7.5,R,A,I,I,I,I,I,C,I
+Conduct fairness/bias evaluation,D1+D2,A.1.3,R,A,C,C,I,C,I,C,I
+Publish public-facing model card,D1,A.5.1,C,C,C,C,I,I,I,A,I
+Review and approve model deployment,D1,8.1,C,C,C,C,I,I,A,C,I

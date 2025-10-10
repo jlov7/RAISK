@@ -1,0 +1,85 @@
+# Syft Configuration for SBOM Generation
+# SSDF Practice: PW.4.1 - Create and maintain Software Bill of Materials
+#
+# This configuration customizes Syft behavior for GenAI project SBOMs
+# Docs: https://github.com/anchore/syft#configuration
+
+# Output format options: spdx-json, spdx-xml, cyclonedx-json, cyclonedx-xml
+# SPDX is ISO/IEC 5962:2021 standard
+output:
+  - "spdx-json"
+
+# Exclude patterns (reduce noise in SBOM)
+exclude:
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/__pycache__/**"
+  - "**/node_modules/**/.cache/**"
+  - "**/*.test.js"
+  - "**/*.spec.js"
+
+# File cataloging options
+file:
+  metadata:
+    # Include file digests for integrity verification
+    digests: ["sha256"]
+    selection: "all"
+
+  content:
+    # Skip binary files to reduce SBOM size
+    skip-files-above-size: 1048576  # 1MB
+
+# Package cataloging options
+package:
+  # Search for packages in these ecosystems
+  cataloger:
+    enabled:
+      - python
+      - javascript
+      - go-module
+      - java
+      - rust
+
+  # Python-specific settings
+  python:
+    # Include editable/development installs
+    include-editable-installs: false
+
+  # JavaScript-specific settings
+  javascript:
+    # Include dev dependencies
+    include-dev-dependencies: false
+
+# GenAI Framework Detection
+# Custom patterns for ML/AI packages
+# These help identify GenAI-specific dependencies
+
+search:
+  scope: "all-layers"  # For container images
+
+# Relationships
+# Document package dependencies (SPDX 2.3+ feature)
+relationships:
+  # Link packages to their dependencies
+  package-file-ownership: true
+
+# Metadata
+# Add organizational context to SBOM
+name: "responsible-genai-starter-kit"
+version: "1.0.0"
+
+# License detection
+licenses:
+  # License discovery configuration
+  select: "concluded"  # Use concluded license if available, else declared
+
+# Logging
+log:
+  level: "info"  # error, warn, info, debug, trace
+  file: ""       # Empty = stdout
+
+# GenAI-Specific Notes:
+# - TensorFlow, PyTorch, Transformers, LangChain will be automatically detected
+# - Model files (.bin, .safetensors, .onnx) are cataloged as file artifacts
+# - For fine-tuned models, document base model in SBOM annotations
+# - Consider adding custom metadata for model cards and datasheets

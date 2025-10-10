@@ -1,0 +1,329 @@
+name: Build Provenance Attestation
+
+# SSDF Practice Mapping:
+# - PS.3.1: Archive and protect each software release
+# - PS.3.2: Make software integrity verification information available
+# - PW.1.3: Establish and maintain a secure build environment
+# - PW.4.1: Create provenance records for software artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# SLSA L2+ Compliance: Minimal permissions for secure builds
+permissions:
+  contents: read
+  id-token: write       # For signing with OIDC token (keyless Sigstore)
+  attestations: write   # For GitHub native attestations
+  packages: write       # For publishing to GitHub Packages (if needed)
+
+jobs:
+  build-and-attest:
+    name: Build and Generate Provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # SSDF PW.1.3: Use hardened, ephemeral build environment
+    # GitHub-hosted runners are SLSA L3 compliant (hermetic, isolated)
+
+    outputs:
+      artifact-digest: ${{ steps.hash.outputs.digest }}
+      artifact-name: ${{ steps.build.outputs.artifact_name }}
+      sanitized-version: ${{ steps.build.outputs.sanitized_version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871  # v4.2.1
+        with:
+          fetch-depth: 0  # Full history for accurate version detection
+
+      # SSDF PW.1.3: Secure build environment setup
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        with:
+          node-version: '20'
+
+      # SSDF PW.4.1: Build reproducible artifacts
+      - name: Build application
+        id: build
+        run: |
+          # Example Python package build
+          if [ -f setup.py ] || [ -f pyproject.toml ]; then
+            pip install build
+            python -m build --outdir dist/
+            echo "artifact_name=python-package" >> $GITHUB_OUTPUT
+          fi
+
+          # Example Node.js build
+          if [ -f package.json ]; then
+            npm ci
+            npm run build --if-present
+            npm pack --pack-destination dist/
+            echo "artifact_name=node-package" >> $GITHUB_OUTPUT
+          fi
+
+          # Create release tarball
+          version_ref="${GITHUB_REF_NAME:-${GITHUB_SHA}}"
+          sanitized_version="${version_ref//\//-}"
+          sanitized_version="${sanitized_version// /-}"
+          tar -czf "release-${sanitized_version}.tar.gz" dist/
+          echo "artifact_name=release-${sanitized_version}.tar.gz" >> $GITHUB_OUTPUT
+          echo "sanitized_version=${sanitized_version}" >> $GITHUB_OUTPUT
+
+      # SSDF PS.3.1: Calculate artifact hash for integrity verification
+      - name: Generate artifact hash
+        id: hash
+        run: |
+          # SHA256 digest for provenance attestation
+          sanitized_version="${{ steps.build.outputs.sanitized_version }}"
+          digest=$(sha256sum "release-${sanitized_version}.tar.gz" | awk '{print $1}')
+          echo "digest=sha256:$digest" >> $GITHUB_OUTPUT
+          echo "Artifact digest: $digest"
+
+      # SSDF PS.3.2: Generate SLSA provenance with GitHub native attestations
+      # This creates a signed statement linking the artifact to this build
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c  # v1.4.3
+        with:
+          subject-path: 'release-*.tar.gz'
+
+      # Additional attestation: SLSA provenance v1.0
+      # Provides detailed build metadata per SLSA specification
+      - name: Generate SLSA provenance v1.0
+        id: slsa
+        run: |
+          cat > provenance.json <<EOF
+          {
+            "_type": "https://in-toto.io/Statement/v1",
+            "subject": [
+              {
+                "name": "${{ steps.build.outputs.artifact_name }}",
+                "digest": {
+                  "sha256": "${{ steps.hash.outputs.digest }}"
+                }
+              }
+            ],
+            "predicateType": "https://slsa.dev/provenance/v1",
+            "predicate": {
+              "buildDefinition": {
+                "buildType": "https://github.com/Attestations/GitHubActionsWorkflow@v1",
+                "externalParameters": {
+                  "workflow": {
+                    "ref": "${{ github.ref }}",
+                    "repository": "${{ github.repository }}",
+                    "path": ".github/workflows/provenance.yml"
+                  }
+                },
+                "internalParameters": {
+                  "github": {
+                    "event_name": "${{ github.event_name }}",
+                    "repository_id": "${{ github.repository_id }}",
+                    "repository_owner_id": "${{ github.repository_owner_id }}"
+                  }
+                },
+                "resolvedDependencies": []
+              },
+              "runDetails": {
+                "builder": {
+                  "id": "https://github.com/Attestations/GitHubHostedActions@v1"
+                },
+                "metadata": {
+                  "invocationId": "${{ github.run_id }}-${{ github.run_attempt }}",
+                  "startedOn": "${{ github.event.repository.updated_at }}",
+                  "finishedOn": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                }
+              }
+            }
+          }
+          EOF
+
+          echo "Generated SLSA provenance:"
+          cat provenance.json | jq .
+
+      # SSDF PS.3.1: Sign provenance with Sigstore Cosign
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da  # v3.7.0
+
+      - name: Sign provenance with Cosign (keyless)
+        run: |
+          # Keyless signing using GitHub OIDC token
+          # This binds the signature to the GitHub Actions identity
+          sanitized_version="${{ steps.build.outputs.sanitized_version }}"
+
+          cosign sign-blob --yes \
+            --bundle "release-${sanitized_version}.tar.gz.bundle" \
+            "release-${sanitized_version}.tar.gz"
+
+          # Also sign the provenance document itself
+          cosign sign-blob --yes \
+            --bundle provenance.json.bundle \
+            provenance.json
+
+      # SSDF PS.3.1: Generate SBOM and link to provenance
+      - name: Generate SBOM
+        uses: anchore/sbom-action@7ccf588e3cf3cc2611714c2eeae48550fbc17552  # v0.17.11
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@5026d3663739160db546203eeaffa6aa1c51a9d6  # v1.4.1
+        with:
+          subject-path: 'release-*.tar.gz'
+          sbom-path: 'sbom.spdx.json'
+
+      # SSDF PS.3.2: Upload all attestation artifacts
+      - name: Upload attestations
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: build-attestations
+          path: |
+            release-*.tar.gz
+            release-*.tar.gz.bundle
+            provenance.json
+            provenance.json.bundle
+            sbom.spdx.json
+          retention-days: 90
+
+      # SSDF PS.3.2: Publish attestations to GitHub Release
+      - name: Upload to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191  # v2.0.8
+        with:
+          files: |
+            release-*.tar.gz
+            release-*.tar.gz.bundle
+            provenance.json
+            provenance.json.bundle
+            sbom.spdx.json
+          body: |
+            ## Build Provenance & Attestations
+
+            This release includes cryptographically signed attestations:
+
+            - **Build Provenance**: SLSA v1.0 provenance document (`provenance.json`)
+            - **SBOM**: Software Bill of Materials in SPDX format (`sbom.spdx.json`)
+            - **Signatures**: Sigstore Cosign bundles (`.bundle` files)
+
+            ### Verification Instructions
+
+            1. **Verify GitHub Attestation:**
+            ```bash
+            gh attestation verify release-*.tar.gz --owner ${{ github.repository_owner }}
+            ```
+
+            2. **Verify Cosign Signature:**
+            ```bash
+            cosign verify-blob \
+              --bundle release-*.tar.gz.bundle \
+              --certificate-identity-regexp="^https://github.com/${{ github.repository }}.*" \
+              --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+              release-*.tar.gz
+            ```
+
+            3. **Inspect Provenance:**
+            ```bash
+            cat provenance.json | jq .predicate.buildDefinition
+            ```
+
+            **SSDF Practices**: PS.3.1, PS.3.2, PW.1.3, PW.4.1
+
+  verify-attestation:
+    name: Verify Build Attestation
+    runs-on: ubuntu-latest
+    needs: build-and-attest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 10
+
+    # SSDF PS.3.2: Verify attestations immediately after generation
+    # Ensures the signing process worked correctly
+
+    permissions:
+      contents: read
+      attestations: read
+
+    steps:
+      - name: Download attestations
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.8
+        with:
+          name: build-attestations
+
+      - name: Install verification tools
+        run: |
+          # Install GitHub CLI for attestation verification
+          type -p gh > /dev/null || (curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y)
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da  # v3.7.0
+
+      - name: Verify Cosign signatures
+        run: |
+          sanitized_version="${{ needs.build-and-attest.outputs.sanitized-version }}"
+
+          # Verify artifact signature
+          cosign verify-blob \
+            --bundle "release-${sanitized_version}.tar.gz.bundle" \
+            --certificate-identity-regexp="^https://github.com/${{ github.repository }}.*" \
+            --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+            "release-${sanitized_version}.tar.gz"
+
+          # Verify provenance signature
+          cosign verify-blob \
+            --bundle provenance.json.bundle \
+            --certificate-identity-regexp="^https://github.com/${{ github.repository }}.*" \
+            --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+            provenance.json
+
+          echo "✓ All Cosign signatures verified successfully"
+
+      - name: Validate SLSA provenance
+        run: |
+          # Verify provenance structure conforms to SLSA v1.0 schema
+          echo "Validating SLSA provenance structure..."
+
+          required_fields=("_type" "subject" "predicateType" "predicate")
+          for field in "${required_fields[@]}"; do
+            if ! jq -e ".$field" provenance.json > /dev/null; then
+              echo "ERROR: Missing required field: $field"
+              exit 1
+            fi
+          done
+
+          # Verify predicate type
+          predicate_type=$(jq -r '.predicateType' provenance.json)
+          if [[ "$predicate_type" != "https://slsa.dev/provenance/v1" ]]; then
+            echo "ERROR: Invalid predicate type: $predicate_type"
+            exit 1
+          fi
+
+          echo "✓ SLSA provenance structure is valid"
+
+      - name: Generate verification summary
+        run: |
+          echo "## Build Provenance Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✓ All attestations verified successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Verified Attestations:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Cosign signature on build artifact" >> $GITHUB_STEP_SUMMARY
+          echo "- Cosign signature on provenance document" >> $GITHUB_STEP_SUMMARY
+          echo "- SLSA v1.0 provenance structure" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SSDF Practices Verified:**" >> $GITHUB_STEP_SUMMARY
+          echo "- PS.3.1: Artifacts cryptographically signed" >> $GITHUB_STEP_SUMMARY
+          echo "- PS.3.2: Integrity verification information available" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.1.3: Secure, isolated build environment" >> $GITHUB_STEP_SUMMARY
+          echo "- PW.4.1: Provenance records created and verifiable" >> $GITHUB_STEP_SUMMARY

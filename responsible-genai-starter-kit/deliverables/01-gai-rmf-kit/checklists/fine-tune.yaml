@@ -1,0 +1,222 @@
+# Fine-Tuning & LoRA Checklist
+# Aligned to NIST AI 600-1 (Generative AI Profile)
+
+checklist_metadata:
+  pattern: "Fine-Tuning & LoRA (Low-Rank Adaptation)"
+  version: "0.1.0"
+  last_updated: "2025-01-XX"
+  description: "Risk management controls for custom model training on proprietary or domain-specific data"
+
+controls:
+  # GOVERN
+  - control_id: "FT-GOV-01"
+    function: "Govern"
+    ref: "AI 600-1 Section 3.1.1"
+    action: "Define model training approval workflow (who can train, on what data, for what purpose)"
+    required_artifacts:
+      - "Training request template"
+      - "Approval chain documentation"
+    owner_role: "ML Governance Board"
+    lifecycle_stage: "design"
+    acceptance_criteria: "No training jobs start without governance approval; audit log of all approvals"
+
+  - control_id: "FT-GOV-02"
+    function: "Govern"
+    ref: "AI 600-1 Section 3.1.2"
+    action: "Establish compute budget and environmental impact targets"
+    required_artifacts:
+      - "Carbon footprint estimate (e.g., via ML CO2 Impact tool)"
+      - "Compute quota allocation"
+    owner_role: "Infrastructure Lead"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Training jobs track GPU-hours and CO2e; reports published quarterly"
+
+  - control_id: "FT-GOV-03"
+    function: "Govern"
+    ref: "AI 600-1 Section 2.4 (Environmental Impact)"
+    action: "Prefer efficient training methods (LoRA, QLoRA) over full fine-tuning when feasible"
+    required_artifacts:
+      - "Training method decision log"
+      - "Efficiency comparison (LoRA vs full FT)"
+    owner_role: "ML Engineer"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Full fine-tuning requires governance exception; LoRA is default"
+
+  # MAP
+  - control_id: "FT-MAP-01"
+    function: "Map"
+    ref: "AI 600-1 Section 3.2.1"
+    action: "Document training data provenance (source, licensing, consent)"
+    required_artifacts:
+      - "Data lineage document"
+      - "License compatibility matrix"
+    owner_role: "Data Governance"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Every dataset traced to source; incompatible licenses flagged before training"
+
+  - control_id: "FT-MAP-02"
+    function: "Map"
+    ref: "AI 600-1 Section 2.3 (Data Privacy)"
+    action: "Classify training data for PII/PHI; apply anonymization if required"
+    required_artifacts:
+      - "PII scan report"
+      - "Anonymization technique documentation (k-anonymity, differential privacy)"
+    owner_role: "Privacy Engineer"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Training on identifiable data requires IRB/ethics approval"
+
+  - control_id: "FT-MAP-03"
+    function: "Map"
+    ref: "AI 600-1 Section 2.2 (Bias/Fairness)"
+    action: "Assess training data for demographic representation and bias"
+    required_artifacts:
+      - "Dataset bias report (fairness metrics by protected attributes)"
+      - "Mitigation plan for underrepresented groups"
+    owner_role: "Fairness/Ethics Team"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Bias report reviewed by governance; underrepresented groups ≥10% of dataset or augmentation applied"
+
+  - control_id: "FT-MAP-04"
+    function: "Map"
+    ref: "AI 600-1 Section 2.6 (Dangerous Content)"
+    action: "Scan training data for harmful content (violence, CSAM, extremism)"
+    required_artifacts:
+      - "Content moderation report (automated + human review)"
+      - "Removal logs"
+    owner_role: "Trust & Safety"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Harmful content flagged and removed before training; <0.1% residual rate"
+
+  # MEASURE
+  - control_id: "FT-MEAS-01"
+    function: "Measure"
+    ref: "AI 600-1 Section 3.3.1"
+    action: "Establish baseline pre-training performance on evaluation suite"
+    required_artifacts:
+      - "Pre-training eval report (task accuracy, perplexity)"
+      - "Eval dataset versioned in Git"
+    owner_role: "ML Engineer"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Baseline documented; post-training improvement ≥5% to justify deployment"
+
+  - control_id: "FT-MEAS-02"
+    function: "Measure"
+    ref: "AI 600-1 Section 3.3.2"
+    action: "Run safety evals post-training (refusal, toxicity, bias)"
+    required_artifacts:
+      - "Safety eval report (D2 harness)"
+      - "Comparison to base model safety scores"
+    owner_role: "ML Engineer"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Fine-tuned model does not regress >5% on safety metrics vs base model"
+
+  - control_id: "FT-MEAS-03"
+    function: "Measure"
+    ref: "AI 600-1 Section 2.2 (Bias)"
+    action: "Measure fairness metrics post-training (equalized odds, demographic parity)"
+    required_artifacts:
+      - "Fairness eval report"
+      - "Disaggregated performance by protected attributes"
+    owner_role: "Fairness Team"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Max disparity <10% across groups; exceptions require mitigation plan"
+
+  - control_id: "FT-MEAS-04"
+    function: "Measure"
+    ref: "AI 600-1 Section 2.3 (Data Privacy)"
+    action: "Test for training data extraction (membership inference, regurgitation)"
+    required_artifacts:
+      - "Privacy attack test report"
+      - "Mitigation plan if extraction successful"
+    owner_role: "Security Researcher"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Membership inference AUC <0.6; no verbatim regurgitation of training examples"
+
+  - control_id: "FT-MEAS-05"
+    function: "Measure"
+    ref: "AI 600-1 Section 2.7 (Information Integrity)"
+    action: "Evaluate model for hallucination/confabulation on domain-specific queries"
+    required_artifacts:
+      - "Hallucination eval (factual consistency scoring)"
+      - "Test dataset with ground-truth answers"
+    owner_role: "Domain Expert + ML Engineer"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Factual consistency ≥90%; hallucination rate <5%"
+
+  # MANAGE
+  - control_id: "FT-MGT-01"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.1"
+    action: "Version-control training scripts, configs, and hyperparameters"
+    required_artifacts:
+      - "Git repo with all training code"
+      - "Config files (YAML/JSON) for reproducibility"
+    owner_role: "ML Engineer"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Every training run traceable to Git commit; configs immutable"
+
+  - control_id: "FT-MGT-02"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.2"
+    action: "Track training runs with experiment management (MLflow, Weights & Biases)"
+    required_artifacts:
+      - "Experiment logs (loss curves, eval metrics)"
+      - "Model artifact registry"
+    owner_role: "ML Ops"
+    lifecycle_stage: "development"
+    acceptance_criteria: "All runs logged; metrics queryable; models downloadable by ID"
+
+  - control_id: "FT-MGT-03"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.3"
+    action: "Generate model card for fine-tuned model"
+    required_artifacts:
+      - "Completed model card (see D1 template)"
+      - "Published to internal model hub"
+    owner_role: "ML Engineer"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Model card includes training data, performance, limitations, ethical considerations"
+
+  - control_id: "FT-MGT-04"
+    function: "Manage"
+    ref: "AI 600-1 Section 2.8 (Value Chain)"
+    action: "Sign model weights and publish provenance (SLSA)"
+    required_artifacts:
+      - "Signed model artifact (e.g., via Sigstore)"
+      - "SLSA provenance attestation (see D3)"
+    owner_role: "ML Ops"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Model signature verified before deployment; provenance chain unbroken"
+
+  - control_id: "FT-MGT-05"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.5"
+    action: "Deploy continuous monitoring for model performance drift"
+    required_artifacts:
+      - "Monitoring dashboard (accuracy, latency, fairness)"
+      - "Alerting rules (accuracy drops >5%)"
+    owner_role: "ML Ops"
+    lifecycle_stage: "monitoring"
+    acceptance_criteria: "Dashboard updated daily; alerts trigger retraining workflow"
+
+  - control_id: "FT-MGT-06"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.6"
+    action: "Establish model rollback procedure for safety/performance regressions"
+    required_artifacts:
+      - "Rollback runbook"
+      - "Blue-green deployment config"
+    owner_role: "DevOps"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Rollback tested in staging; <5 min rollback time"
+
+  - control_id: "FT-MGT-07"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.7"
+    action: "Retain training data and models per data retention policy"
+    required_artifacts:
+      - "Data retention schedule"
+      - "Deletion logs"
+    owner_role: "Data Governance"
+    lifecycle_stage: "monitoring"
+    acceptance_criteria: "Training data deleted after retention period; models archived or deleted per policy"

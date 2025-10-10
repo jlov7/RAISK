@@ -1,0 +1,86 @@
+{
+  "title": "Edited Photograph with Filters",
+  "claim_generator": "C2PA Provenance Demo v0.1.0",
+  "format": "image/jpeg",
+  "assertions": [
+    {
+      "label": "stds.schema-org.CreativeWork",
+      "data": {
+        "@context": "https://schema.org",
+        "@type": "Photograph",
+        "name": "Enhanced Portrait Photo",
+        "description": "Original photograph with color correction and filter applied",
+        "author": {
+          "@type": "Person",
+          "name": "Jane Photographer"
+        },
+        "dateCreated": "2025-01-10T14:20:00Z",
+        "dateModified": "2025-01-15T16:45:00Z"
+      }
+    },
+    {
+      "label": "c2pa.actions",
+      "data": {
+        "actions": [
+          {
+            "action": "c2pa.opened",
+            "softwareAgent": {
+              "name": "Professional Photo Editor",
+              "version": "12.5.0"
+            },
+            "when": "2025-01-15T16:30:00Z"
+          },
+          {
+            "action": "c2pa.color_adjustments",
+            "softwareAgent": {
+              "name": "Professional Photo Editor",
+              "version": "12.5.0"
+            },
+            "when": "2025-01-15T16:35:00Z",
+            "parameters": {
+              "brightness": "+10",
+              "contrast": "+5",
+              "saturation": "+8"
+            }
+          },
+          {
+            "action": "c2pa.filtered",
+            "softwareAgent": {
+              "name": "Professional Photo Editor",
+              "version": "12.5.0"
+            },
+            "when": "2025-01-15T16:40:00Z",
+            "parameters": {
+              "filter": "Vintage Warm",
+              "intensity": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "stds.exif",
+      "data": {
+        "exif:Make": "Canon",
+        "exif:Model": "EOS R5",
+        "exif:LensModel": "RF 24-70mm F2.8 L IS USM",
+        "exif:ExposureTime": "1/250",
+        "exif:FNumber": "2.8",
+        "exif:ISO": "400",
+        "exif:DateTimeOriginal": "2025-01-10T14:20:00Z"
+      }
+    }
+  ],
+  "ingredients": [
+    {
+      "title": "Original Photograph",
+      "format": "image/jpeg",
+      "document_id": "xmp:iid:original-photo-12345",
+      "relationship": "parentOf",
+      "thumbnail": {
+        "format": "image/jpeg",
+        "identifier": "cid:thumbnail"
+      }
+    }
+  ]
+}

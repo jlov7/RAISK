@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C2PA Manifest Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>C2PA Content Provenance Viewer</h1>
+            <p class="subtitle">View C2PA manifests and verify content authenticity</p>
+            <div class="warning-banner">
+                <strong>⚠ DEVELOPMENT DEMO ONLY</strong> - Do not use for production verification
+            </div>
+        </header>
+
+        <main>
+            <section class="upload-section">
+                <div class="upload-box" id="uploadBox">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">Drop an image here or click to select</p>
+                    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+                    <button id="selectButton" class="btn-primary">Select File</button>
+                </div>
+            </section>
+
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <div class="image-container">
+                    <img id="previewImage" alt="Selected content">
+                </div>
+            </section>
+
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="tabs">
+                    <button class="tab active" data-tab="summary">Summary</button>
+                    <button class="tab" data-tab="assertions">Assertions</button>
+                    <button class="tab" data-tab="signature">Signature</button>
+                    <button class="tab" data-tab="raw">Raw JSON</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="summary" class="tab-pane active">
+                        <div id="summaryContent"></div>
+                    </div>
+
+                    <div id="assertions" class="tab-pane">
+                        <div id="assertionsContent"></div>
+                    </div>
+
+                    <div id="signature" class="tab-pane">
+                        <div id="signatureContent"></div>
+                    </div>
+
+                    <div id="raw" class="tab-pane">
+                        <pre id="rawContent"></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="no-manifest" id="noManifest" style="display: none;">
+                <div class="info-box warning">
+                    <h3>⚠ No C2PA Manifest Found</h3>
+                    <p>This image does not contain a C2PA manifest. It may be:</p>
+                    <ul>
+                        <li>Not signed with C2PA</li>
+                        <li>An unsigned original image</li>
+                        <li>Using a different provenance standard</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="info-box error">
+                    <h3>❌ Error</h3>
+                    <p id="errorMessage"></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Built with <a href="https://opensource.contentauthenticity.org/" target="_blank">Content Authenticity Initiative SDK</a></p>
+            <p>Compliant with <a href="https://c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html" target="_blank">C2PA v2.2 Specification</a></p>
+        </footer>
+    </div>
+
+    <!-- CAI JavaScript SDK (c2pa library) -->
+    <script type="module" src="viewer.js"></script>
+</body>
+</html>

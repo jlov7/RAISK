@@ -1,0 +1,233 @@
+# Code Assistant in Enterprise Checklist
+# Aligned to NIST AI 600-1 (Generative AI Profile)
+
+checklist_metadata:
+  pattern: "AI-Powered Code Assistant (e.g., GitHub Copilot, Cursor, internal tools)"
+  version: "0.1.0"
+  last_updated: "2025-01-XX"
+  description: "Risk management controls for deploying generative AI coding tools in enterprise development environments"
+
+controls:
+  # GOVERN
+  - control_id: "CA-GOV-01"
+    function: "Govern"
+    ref: "AI 600-1 Section 3.1.1"
+    action: "Define code assistant acceptable use policy (permitted languages, repositories, IP restrictions)"
+    required_artifacts:
+      - "Code assistant AUP"
+      - "Legal review sign-off"
+    owner_role: "Legal / CISO"
+    lifecycle_stage: "design"
+    acceptance_criteria: "AUP prohibits use on classified code, customer data, or restricted repos"
+
+  - control_id: "CA-GOV-02"
+    function: "Govern"
+    ref: "AI 600-1 Section 3.1.2"
+    action: "Designate responsible party for code assistant security (monitoring, incidents)"
+    required_artifacts:
+      - "RACI matrix"
+      - "Escalation contacts"
+    owner_role: "Engineering Manager"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Responsible party reviews incidents monthly; reports to governance board"
+
+  - control_id: "CA-GOV-03"
+    function: "Govern"
+    ref: "AI 600-1 Section 2.8 (Value Chain)"
+    action: "Review vendor contracts for data usage, retention, and IP ownership"
+    required_artifacts:
+      - "Vendor contract with data processing addendum"
+      - "Privacy impact assessment"
+    owner_role: "Procurement / Legal"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Contract prohibits vendor training on enterprise code; data deleted on termination"
+
+  # MAP
+  - control_id: "CA-MAP-01"
+    function: "Map"
+    ref: "AI 600-1 Section 3.2.1"
+    action: "Inventory which repositories/codebases are accessible to code assistant"
+    required_artifacts:
+      - "Repo access list"
+      - "Data classification labels (public/internal/confidential)"
+    owner_role: "DevOps / Security"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Confidential repos excluded from code assistant context; access list reviewed quarterly"
+
+  - control_id: "CA-MAP-02"
+    function: "Map"
+    ref: "AI 600-1 Section 2.3 (Data Privacy)"
+    action: "Identify secrets/credentials in accessible codebases (API keys, passwords)"
+    required_artifacts:
+      - "Secret scanning report (e.g., TruffleHog, GitGuardian)"
+      - "Remediation plan"
+    owner_role: "Security Team"
+    lifecycle_stage: "design"
+    acceptance_criteria: "All hard-coded secrets rotated before code assistant deployment"
+
+  - control_id: "CA-MAP-03"
+    function: "Map"
+    ref: "AI 600-1 Section 2.7 (Information Integrity)"
+    action: "Map risk of code assistant suggesting vulnerable patterns (SQL injection, XSS)"
+    required_artifacts:
+      - "Threat model for code generation (see /docs/threat-model.md)"
+      - "OWASP Top 10 crosswalk"
+    owner_role: "AppSec Team"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Threat model identifies top 5 CWEs; mitigations planned"
+
+  - control_id: "CA-MAP-04"
+    function: "Map"
+    ref: "AI 600-1 Section 2.8 (Value Chain)"
+    action: "Assess risk of code assistant generating copyleft or GPL code"
+    required_artifacts:
+      - "License compliance policy"
+      - "Legal guidance on AI-generated code"
+    owner_role: "Legal / Open Source Program Office"
+    lifecycle_stage: "design"
+    acceptance_criteria: "Policy forbids copyleft suggestions in proprietary products; devs trained on license review"
+
+  # MEASURE
+  - control_id: "CA-MEAS-01"
+    function: "Measure"
+    ref: "AI 600-1 Section 3.3.1"
+    action: "Establish baseline code quality metrics (bug rate, security vulnerabilities)"
+    required_artifacts:
+      - "Pre-deployment SAST scan results"
+      - "Defect density metrics"
+    owner_role: "QA / AppSec"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Baseline documented; post-deployment regressions >10% trigger review"
+
+  - control_id: "CA-MEAS-02"
+    function: "Measure"
+    ref: "AI 600-1 Section 2.7 (Information Integrity)"
+    action: "Scan code assistant suggestions for known vulnerabilities (SAST on AI-generated code)"
+    required_artifacts:
+      - "SAST integration (e.g., Semgrep, CodeQL)"
+      - "Weekly scan reports"
+    owner_role: "AppSec"
+    lifecycle_stage: "development"
+    acceptance_criteria: "SAST runs on all AI-suggested code before merge; high/critical findings block PR"
+
+  - control_id: "CA-MEAS-03"
+    function: "Measure"
+    ref: "AI 600-1 Section 2.8 (Value Chain)"
+    action: "Detect license-incompatible code in AI suggestions"
+    required_artifacts:
+      - "License scanner (e.g., FOSSA, Black Duck)"
+      - "Violation reports"
+    owner_role: "Legal / DevOps"
+    lifecycle_stage: "development"
+    acceptance_criteria: "License scanner blocks PRs with GPL/AGPL code in proprietary repos"
+
+  - control_id: "CA-MEAS-04"
+    function: "Measure"
+    ref: "AI 600-1 Section 3.3.2"
+    action: "Monitor secret leakage in AI-generated code"
+    required_artifacts:
+      - "Secret detection in CI (pre-commit hooks, GitHub Advanced Security)"
+      - "Incident logs"
+    owner_role: "Security Team"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Secrets detected in <1 min; auto-revoked before push"
+
+  - control_id: "CA-MEAS-05"
+    function: "Measure"
+    ref: "AI 600-1 Section 3.3.3"
+    action: "Red-team code assistant for adversarial prompt injection (e.g., 'generate backdoor')"
+    required_artifacts:
+      - "Red team report with attack transcripts"
+      - "Remediation plan"
+    owner_role: "Security Researcher"
+    lifecycle_stage: "development"
+    acceptance_criteria: "Red team attempts ≥20 adversarial prompts; success rate <5%"
+
+  # MANAGE
+  - control_id: "CA-MGT-01"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.1"
+    action: "Require human code review for all AI-generated code"
+    required_artifacts:
+      - "Code review policy update"
+      - "Training for reviewers on AI-specific risks"
+    owner_role: "Engineering Manager"
+    lifecycle_stage: "development"
+    acceptance_criteria: "All PRs labeled 'AI-assisted' require 2 reviewers; security-critical code requires AppSec approval"
+
+  - control_id: "CA-MGT-02"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.2"
+    action: "Enable audit logging for all code assistant interactions"
+    required_artifacts:
+      - "Logging configuration (user, timestamp, prompt, suggestion)"
+      - "Log retention policy (90 days minimum)"
+    owner_role: "DevOps"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "All suggestions logged; logs queryable for incident investigation"
+
+  - control_id: "CA-MGT-03"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.3"
+    action: "Deploy pre-commit hooks to block secrets, vulnerabilities, license violations"
+    required_artifacts:
+      - "Pre-commit config (e.g., detect-secrets, Semgrep, FOSSA)"
+      - "Developer onboarding docs"
+    owner_role: "DevOps"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Hooks enforced on all repos; bypass requires governance approval"
+
+  - control_id: "CA-MGT-04"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.4"
+    action: "Establish incident response plan for code assistant security events (secret leak, vuln introduction)"
+    required_artifacts:
+      - "Code assistant incident runbook"
+      - "Tabletop exercise report"
+    owner_role: "Security Team"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Runbook tested; <30 min mean time to secret revocation"
+
+  - control_id: "CA-MGT-05"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.5"
+    action: "Monitor code assistant adoption and flag high-risk usage patterns"
+    required_artifacts:
+      - "Usage dashboard (suggestions/day, acceptance rate by repo)"
+      - "Anomaly detection rules (e.g., 100% acceptance rate = insufficient review)"
+    owner_role: "Engineering Analytics"
+    lifecycle_stage: "monitoring"
+    acceptance_criteria: "Dashboard reviewed monthly; anomalies investigated"
+
+  - control_id: "CA-MGT-06"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.6"
+    action: "Provide developer training on secure use of code assistants"
+    required_artifacts:
+      - "Training module (security risks, license review, human oversight)"
+      - "Completion certificates"
+    owner_role: "Security Awareness Team"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "100% of devs using code assistant complete training before access granted"
+
+  - control_id: "CA-MGT-07"
+    function: "Manage"
+    ref: "AI 600-1 Section 3.4.7"
+    action: "Disable code assistant access for high-security repos (e.g., crypto, auth, payment)"
+    required_artifacts:
+      - "High-security repo list"
+      - "Access control enforcement (e.g., via GitHub Enterprise policies)"
+    owner_role: "CISO"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "Code assistant disabled on all high-security repos; policy audited quarterly"
+
+  - control_id: "CA-MGT-08"
+    function: "Manage"
+    ref: "AI 600-1 Section 2.7 (Information Integrity)"
+    action: "Implement tool-use sandboxing if code assistant has execution capabilities"
+    required_artifacts:
+      - "Sandbox config (containerized, network-isolated)"
+      - "Breakout testing report"
+    owner_role: "Platform Security"
+    lifecycle_stage: "deployment"
+    acceptance_criteria: "All code execution sandboxed; no filesystem or network access outside container"
