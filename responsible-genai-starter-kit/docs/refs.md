@@ -256,7 +256,7 @@ permissions:
 When citing this toolkit in academic or professional work:
 
 **APA**:
-> Lovell, J. (2025). *Responsible GenAI Starter Kit* (Version 0.1.0) [Computer software]. https://github.com/yourusername/responsible-genai-starter-kit
+> Lovell, J. (2025). *Responsible GenAI Starter Kit* (Version 0.1.0) [Computer software]. https://github.com/jlov7/responsible-genai-starter-kit
 
 **BibTeX**:
 ```bibtex
@@ -265,7 +265,7 @@ When citing this toolkit in academic or professional work:
   title = {Responsible GenAI Starter Kit},
   version = {0.1.0},
   year = {2025},
-  url = {https://github.com/yourusername/responsible-genai-starter-kit},
+  url = {https://github.com/jlov7/responsible-genai-starter-kit},
   doi = {10.5281/zenodo.XXXXXX}
 }
 ```

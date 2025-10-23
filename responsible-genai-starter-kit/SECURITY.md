@@ -9,7 +9,7 @@ We take security seriously. If you discover a security vulnerability in this pro
 **DO NOT** open a public GitHub issue for security vulnerabilities.
 
 Instead, please report security issues via:
-- **Email**: security@yourdomain.com
+- **Email**: jase@jasonlovell.ai
 - **GitHub Security Advisories**: Use the "Security" tab in this repository
 
 ### What to Include

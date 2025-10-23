@@ -36,7 +36,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Reports of abusive, harassing, or otherwise unacceptable behavior may be made by contacting the project team at [security@yourdomain.example](mailto:security@yourdomain.example). All complaints will be reviewed and investigated promptly and fairly.
+Reports of abusive, harassing, or otherwise unacceptable behavior may be made by contacting the project team at [jase@jasonlovell.ai](mailto:jase@jasonlovell.ai). All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 

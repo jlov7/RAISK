@@ -2,28 +2,28 @@
 # See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Default owner for everything in the repo
-* @yourusername
+* @jlov7
 
 # Deliverables - require review from lead + domain expert
-/deliverables/01-gai-rmf-kit/ @yourusername
-/deliverables/02-eval-harness/ @yourusername
-/deliverables/03-ssdf-genai-ci/ @yourusername
-/deliverables/04-c2pa-provenance-demo/ @yourusername
-/deliverables/05-iso42001-bridge/ @yourusername
-/deliverables/06-education-onepager/ @yourusername
+/deliverables/01-gai-rmf-kit/ @jlov7
+/deliverables/02-eval-harness/ @jlov7
+/deliverables/03-ssdf-genai-ci/ @jlov7
+/deliverables/04-c2pa-provenance-demo/ @jlov7
+/deliverables/05-iso42001-bridge/ @jlov7
+/deliverables/06-education-onepager/ @jlov7
 
 # Documentation - require review from docs team
-/docs/ @yourusername
-*.md @yourusername
+/docs/ @jlov7
+*.md @jlov7
 
 # CI/CD workflows - require security review
-/.github/workflows/ @yourusername
+/.github/workflows/ @jlov7
 
 # Security-sensitive files
-/SECURITY.md @yourusername
-/scripts/check_thresholds.py @yourusername
+/SECURITY.md @jlov7
+/scripts/check_thresholds.py @jlov7
 
 # Release artifacts
-/VERSION @yourusername
-/CHANGELOG.md @yourusername
-/RELEASE_NOTES.md @yourusername
+/VERSION @jlov7
+/CHANGELOG.md @jlov7
+/RELEASE_NOTES.md @jlov7
