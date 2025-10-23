@@ -59,7 +59,7 @@ Before starting, ensure you have:
 **Action**: Clone or download the Responsible GenAI Starter Kit repository.
 
 ```bash
-git clone https://github.com/yourusername/responsible-genai-starter-kit.git
+git clone https://github.com/jlov7/responsible-genai-starter-kit.git
 cd responsible-genai-starter-kit
 ```
 

@@ -28,5 +28,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated dependency updates
 - Eval threshold enforcement as release blocker
 
-[Unreleased]: https://github.com/yourusername/responsible-genai-starter-kit/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/yourusername/responsible-genai-starter-kit/releases/tag/v0.1.0
+[Unreleased]: https://github.com/jlov7/responsible-genai-starter-kit/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jlov7/responsible-genai-starter-kit/releases/tag/v0.1.0

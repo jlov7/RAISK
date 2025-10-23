@@ -17,7 +17,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ```bash
 # Clone and enter the repository
-git clone https://github.com/yourusername/responsible-genai-starter-kit.git
+git clone https://github.com/jlov7/responsible-genai-starter-kit.git
 cd responsible-genai-starter-kit
 
 # Install Python dependencies (eval harness)
@@ -187,7 +187,7 @@ All contributions must meet:
 
 ## 📧 Questions?
 
-- Open a [GitHub Discussion](https://github.com/yourusername/responsible-genai-starter-kit/discussions)
+- Open a [GitHub Discussion](https://github.com/jlov7/responsible-genai-starter-kit/discussions)
 - Tag maintainers in issues or PRs
 - Check existing [documentation](docs/)
 

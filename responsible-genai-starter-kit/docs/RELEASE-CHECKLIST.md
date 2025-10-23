@@ -10,7 +10,7 @@
 ```bash
 # Clone to a clean directory
 cd /tmp
-git clone https://github.com/yourusername/responsible-genai-starter-kit.git test-release
+git clone https://github.com/jlov7/responsible-genai-starter-kit.git test-release
 cd test-release
 
 # Test D2 eval harness
@@ -102,10 +102,10 @@ After release workflow completes:
 gh release view v0.1.0
 
 # Verify attestation bundle present
-gh attestation verify release-v0.1.0.tar.gz --owner yourusername
+gh attestation verify release-v0.1.0.tar.gz --owner jlov7
 
 # Verify SBOM artifact
-gh api repos/yourusername/responsible-genai-starter-kit/releases/latest/assets | \
+gh api repos/jlov7/responsible-genai-starter-kit/releases/latest/assets | \
   jq -r '.[].name' | grep -E "(sbom|bom)"
 # Expected: sbom-spdx.json, sbom-cyclonedx.json
 ```
@@ -148,7 +148,7 @@ git push
 # Via GitHub UI: Settings → Pages
 # Source: Deploy from branch (main, /docs or root)
 # Or via CLI:
-gh api repos/yourusername/responsible-genai-starter-kit/pages \
+gh api repos/jlov7/responsible-genai-starter-kit/pages \
   -X POST \
   -f source[branch]=main \
   -f source[path]=/docs
@@ -161,11 +161,11 @@ gh api repos/yourusername/responsible-genai-starter-kit/pages \
 gh workflow run scorecard.yml
 
 # Wait for completion, then check score
-gh api repos/yourusername/responsible-genai-starter-kit/code-scanning/alerts \
+gh api repos/jlov7/responsible-genai-starter-kit/code-scanning/alerts \
   --jq '.[] | select(.tool.name == "OpenSSF Scorecard") | .most_recent_instance.state'
 
 # Or check public API (if publish_results: true)
-curl https://api.securityscorecards.dev/projects/github.com/yourusername/responsible-genai-starter-kit
+curl https://api.securityscorecards.dev/projects/github.com/jlov7/responsible-genai-starter-kit
 ```
 
 ---

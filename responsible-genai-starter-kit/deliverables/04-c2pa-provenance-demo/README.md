@@ -1,181 +1,142 @@
-# C2PA Content Provenance Demo
+# D4 — C2PA Provenance Demo
 
-> **Compliant with C2PA Technical Specification v2.2**
+Command-line tools and a lightweight web viewer for signing and verifying AI-generated content using the C2PA 2.2 specification. Built as a research demo with production-grade practices (TypeScript, pinned dependencies, automated tests).
 
-A complete demonstration of C2PA (Coalition for Content Provenance and Authenticity) content signing and verification for AI-generated content and digital media.
+---
 
-## What is C2PA?
+## Highlights
 
-C2PA provides a standard for establishing the provenance and authenticity of digital content. It enables creators, editors, and consumers to trace the origin and history of digital media, including:
+- **CLI tools** for signing (`cli-sign.ts`) and verifying (`cli-verify.ts`) image assets.
+- **Development certificates** and helper scripts for local experimentation (never for production).
+- **Web viewer** that loads C2PA manifests via browser-friendly bundles.
+- **Automated smoke tests** (`npm test`) to ensure build artifacts work end-to-end.
+- **Postinstall script** that copies C2PA WASM assets into the viewer bundle.
 
-- **Who** created or edited the content
-- **When** it was created or modified
-- **How** it was created (e.g., AI-generated, photographed, edited)
-- **What** tools and processes were used
+---
 
-This is critical for:
-- Combating misinformation and deepfakes
-- Protecting intellectual property
-- Establishing content authenticity
-- Meeting regulatory requirements (e.g., AI transparency)
+## Prerequisites
 
-## Features
+- Node.js 18 or later
+- npm 9+
+- OpenSSL (for generating demo certificates)
 
-- **CLI Signing Tool**: Sign images with C2PA manifests
-- **CLI Verification Tool**: Verify and inspect C2PA manifests
-- **Web Viewer**: Browser-based manifest inspection powered by the CAI c2pa SDK
-- **AI Content Support**: C2PA v2.2 AI assertions for generative content
-- **Example Metadata**: Pre-built templates for common use cases
-- **Development Certificates**: Quick-start certificate generation
-- **Comprehensive Tests**: Automated test suite
-
-## Quick Start
+Verify environment:
 
 ```bash
-# Install dependencies
+node --version
+npm --version
+openssl version
+```
+
+---
+
+## Install & Build
+
+```bash
+cd deliverables/04-c2pa-provenance-demo
 npm install
-
-# Build TypeScript
 npm run build
+```
 
-# Generate development certificates
+`npm install` runs `scripts/setup-viewer-assets.cjs` to copy required C2PA WASM blobs into `viewer/vendor/`.
+
+---
+
+## Generate Demo Certificates
+
+```bash
 bash examples/generate-dev-certs.sh
+```
 
-# Sign an image
+This script produces:
+- `examples/certs/dev-private-key.pem`
+- `examples/certs/dev-certificate.pem`
+
+> ⚠️ These keys are **for development only**. They are self-signed, unprotected, and must never be used in production. Replace them with CA-issued certificates and secure key management (HSM, KMS) before real deployments.
+
+---
+
+## Sign Content
+
+```bash
 npm run sign -- \
   -i examples/images/photo.jpg \
   -o examples/images/photo-signed.jpg \
   -c examples/certs/dev-certificate.pem \
   -k examples/certs/dev-private-key.pem \
-  --title "My Photo" \
+  --title "Demo Image" \
+  --author "Research Lab" \
   --ai-generated
-
-# Verify the signed image
-npm run verify -- -i examples/images/photo-signed.jpg --detailed
-
-# Open web viewer
-npm run viewer
 ```
 
-> **Note:** `npm install` automatically copies the CAI browser SDK (wasm + worker) into `viewer/vendor/` so the manifest viewer can verify real C2PA metadata offline.
+Key options:
+- `--metadata`: Path to custom JSON assertions to merge into the manifest
+- `--title`, `--author`: Add schema.org `CreativeWork` metadata
+- `--ai-generated`: Add AI-training disclaimers per C2PA 2.2 guidelines
 
-## Documentation
+CLI output summarizes the manifest and warns if demo keys are in use.
 
-See **[WALKTHROUGH.md](./WALKTHROUGH.md)** for complete documentation including:
-- Installation and setup
-- Detailed usage examples
-- C2PA v2.2 compliance details
-- Security considerations
-- Production deployment guide
-- Troubleshooting
+---
 
-## Security Warning
+## Verify Content
 
-**⚠ DEVELOPMENT DEMO ONLY ⚠**
+```bash
+npm run verify -- \
+  -i examples/images/photo-signed.jpg \
+  --detailed
+```
 
-This demo uses self-signed development certificates that are **NOT suitable for production use**.
+Expect structured output indicating manifest validity, signature status, and embedded assertions. Use `--json` (if you extend the CLI) for machine-readable verification logs.
 
-For production deployments:
-- Obtain certificates from a trusted Certificate Authority
-- Use Hardware Security Modules (HSM) for key storage
-- Implement proper key management and rotation
-- Follow organizational security policies
+---
 
-See [WALKTHROUGH.md - Security Considerations](./WALKTHROUGH.md#security-considerations) for details.
+## Web Viewer
+
+```bash
+npm run viewer
+# Opens http://localhost:8080
+```
+
+Drop signed assets onto the viewer or point the interface to static files. The viewer bundles C2PA’s ESM/worker assets via the `vendor/` directory populated at install time.
+
+---
 
 ## Project Structure
 
 ```
 04-c2pa-provenance-demo/
-├── src/                    # TypeScript source files
-│   ├── cli-sign.ts         # Signing CLI
-│   └── cli-verify.ts       # Verification CLI
-├── viewer/                 # Web-based manifest viewer
-│   ├── index.html
-│   ├── styles.css
-│   └── viewer.js
-├── examples/               # Example files and scripts
-│   ├── generate-dev-certs.sh
-│   ├── metadata-*.json
-│   └── certs/             # Generated certificates
-└── test/                  # Test suite
+├── src/                  # TypeScript sources for CLI tools
+├── dist/                 # Transpiled JavaScript (generated by `npm run build`)
+├── viewer/               # Static web viewer + vendor assets
+├── examples/             # Sample images, metadata, cert generation script
+├── scripts/              # Setup utilities (asset copier)
+└── test/                 # Smoke tests exercising build + CLI
 ```
 
-## Requirements
-
-- Node.js 18.0.0+
-- OpenSSL 1.1.1+ (for certificate generation)
-- npm or yarn
-
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Compile TypeScript to JavaScript |
-| `npm run clean` | Remove compiled files |
-| `npm run sign` | Run the signing CLI |
-| `npm run verify` | Run the verification CLI |
-| `npm run viewer` | Start the web viewer (port 8080) |
-| `npm test` | Run the test suite |
-
-## C2PA v2.2 Compliance
-
-This implementation supports:
-- ✅ Manifest signing with PS256 (RSA-PSS + SHA-256)
-- ✅ Hard bindings to JPEG, PNG, WebP
-- ✅ AI generation assertions (`c2pa.ai-generative-training`)
-- ✅ Action history tracking (`c2pa.actions`)
-- ✅ Schema.org CreativeWork metadata
-- ✅ EXIF metadata preservation
-- ✅ Content ingredient tracking
-
-## Use Cases
-
-### AI-Generated Content
-Mark AI-generated images with:
-- Training data usage restrictions
-- Model information
-- Generation parameters
-- Software agent details
-
-### Edited Photography
-Track editing history with:
-- Original source (ingredients)
-- Edit actions and parameters
-- Software used
-- EXIF metadata
-
-### Content Authentication
-Sign any digital content to establish:
-- Authorship
-- Creation date
-- Content integrity
-- Chain of custody
-
-## Related Resources
-
-- [C2PA Specification v2.2](https://c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html)
-- [Content Authenticity Initiative](https://contentauthenticity.org/)
-- [c2pa-node Library](https://www.npmjs.com/package/c2pa-node)
-- [NIST AI 600-1 (GenAI Profile)](https://doi.org/10.6028/NIST.AI.600-1) - Information Integrity
-
-## Part of Responsible GenAI Starter Kit
-
-This demo is **Deliverable 4** of the [Responsible GenAI Starter Kit](../../README.md), which provides:
-
-1. Risk & Control Checklist
-2. Evaluation Harness
-3. CI/CD Security Pipeline
-4. **C2PA Provenance Demo** (this deliverable)
-5. ISO 42001 Bridge
-6. Educator Toolkit
-
-All aligned with NIST AI RMF and secure-by-design principles.
-
-## License
-
-MIT License - See the main project for details.
+`npm test` verifies TypeScript compilation, certificate presence, CLI help, viewer assets, and metadata examples.
 
 ---
 
-**Questions?** See [WALKTHROUGH.md](./WALKTHROUGH.md) or the main Responsible GenAI Starter Kit documentation.
+## Customization Ideas
+
+- **Additional assertions:** Extend `cli-sign.ts` with domain-specific metadata (e.g., editorial policy, content warnings).
+- **Video/Audio support:** Use `getFormatFromFilename` as a starting point and add MIME types, or integrate with ffmpeg for pre-processing.
+- **Integration pipeline:** Embed the CLI into your content publishing workflow post-generation but pre-release.
+- **Production hardening:** Replace dev certificates, integrate with hardware-backed signing, implement key rotation, and enforce manifest policies.
+
+---
+
+## Integration with Other Modules
+
+- **D2 Evaluation Harness:** Pair signed outputs with evaluation reports to demonstrate provenance + safety combined.
+- **D3 Workflows:** Publish signed assets as part of release artifacts alongside SBOMs and provenance attestations.
+- **D6 Education Pack:** Use screenshots of the viewer to educate end-users on AI-generated content labels.
+
+---
+
+## Licensing
+
+- Code: MIT (for easier embedding into other Node.js projects)
+- Documentation: CC-BY-4.0
+
+Attribute “Responsible GenAI Starter Kit – Jason Lovell” when reusing docs or screenshots.

@@ -317,10 +317,10 @@ These resources explain how students may attempt to bypass AI safety filters. Ed
 When referencing the Responsible GenAI Starter Kit in your work:
 
 **APA Style**:
-> Lovell, J. (2025). *Responsible GenAI Starter Kit* (Version 0.1.0) [Computer software]. https://github.com/yourusername/responsible-genai-starter-kit
+> Lovell, J. (2025). *Responsible GenAI Starter Kit* (Version 0.1.0) [Computer software]. https://github.com/jlov7/responsible-genai-starter-kit
 
 **MLA Style**:
-> Lovell, Jason. *Responsible GenAI Starter Kit*. Version 0.1.0, 2025. GitHub, https://github.com/yourusername/responsible-genai-starter-kit.
+> Lovell, Jason. *Responsible GenAI Starter Kit*. Version 0.1.0, 2025. GitHub, https://github.com/jlov7/responsible-genai-starter-kit.
 
 ---
 
